@@ -39,16 +39,19 @@ const thoughtController = {
   },
 
   // get a thought by id
-  getThoughtById({ params, body }, res) {
-    Thought.findOne({ _id: params.id }, body, { new: true, runValidators: true })
-    .then(dbThoughtData => {
-      if (!dbThoughtData) {
-        res.status(404).json({ message: 'No thought with this id' });
-        return;
-      }
-      res.json(dbThoughtData);
-    })
-    .catch(err => res.json(err));
+  getThoughtById({ params }, res) {
+    Thought.findOne({ _id: params.id })
+      .populate({
+        path: 'reactions',
+        select: '-__v'
+      })
+      .select('-__v')
+      .sort({ _id: -1 })
+      .then(dbThoughtData => res.json(dbThoughtData))
+      .catch(err => {
+        console.log(err);
+        res.sendStatus(400);
+      });
   },
 
   // updating a thought by id
@@ -86,6 +89,11 @@ const thoughtController = {
       })
       .catch(err => res.json(err));
   },
+// deleteThought({ params }, res) {
+//   Thought.findOneAndDelete({ _id: params.id })
+//     .then(dbThoughtData => res.json(dbThoughtData))
+//     .catch(err => res.json(err));
+// },
 
   // adding reaction to thought
   createReaction({ params, body }, res) {

@@ -12,16 +12,22 @@ const {
 // /api/thoughts
 
 router
-  .route('/').get(getAllThoughts).post(createThought);
+  .route('/').get(getAllThoughts);
 
 // Using: /api/thoughts/:id
 router
-  .route('/:id').get(getThoughtById).put(updateThought).delete(deleteThought);
+  .route('/:id').get(getThoughtById).put(updateThought);
 
+router
+  .route('/:userId').post(createThought)
+   
 // /api/thoughts/:thoughtId/reactions
 router
-  .route('/:thoughtId/reactions')
-  .put(createReaction)
-  .delete(deleteReaction);
+  .route('/:thoughtId/reactions').post(createReaction);
+
+router
+  .route('/:userId/:thoughtId').delete(deleteThought);
+
+router.route('/:userId/:thoughtId/:reactionId').delete(deleteReaction);
 
 module.exports = router;
